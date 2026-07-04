@@ -1,0 +1,33 @@
+{
+  "siteLabel":   "Portfolio",
+  "siteTitle":   "Galleria",
+  "siteTitleEm": "Visuale",
+  "filterAll":          "Tutti",
+  "filterNature":       "Natura",
+  "filterArchitecture": "Architettura",
+  "filterPortraits":    "Ritratti",
+  "filterAbstract":     "Astratto",
+  "lbClose": "Chiudi",
+  "lbPrev":  "Immagine precedente",
+  "lbNext":  "Immagine successiva",
+  "footerText": "Galleria — Sviluppata con HTML / CSS / JS",
+  "langToggleLabel": "Switch to English",
+  "items": [
+    { "title": "Foresta Silenziosa" },
+    { "title": "Alba sul Mare" },
+    { "title": "Montagne d'Inverno" },
+    { "title": "Fiori di Campo" },
+    { "title": "Tramonto Rosso" },
+    { "title": "Cattedrale di Luce" },
+    { "title": "Geometrie Urbane" },
+    { "title": "Porta Antica" },
+    { "title": "Cortile Medievale" },
+    { "title": "Volto nell'Ombra" },
+    { "title": "Sguardo Diretto" },
+    { "title": "Emozione Pura" },
+    { "title": "Pensiero Profondo" },
+    { "title": "Onde di Colore" },
+    { "title": "Linee Infinite" },
+    { "title": "Riflessi Astratti" }
+  ]
+}

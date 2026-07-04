@@ -1,0 +1,33 @@
+{
+  "siteLabel":   "Portfolio",
+  "siteTitle":   "Visual",
+  "siteTitleEm": "Gallery",
+  "filterAll":          "All",
+  "filterNature":       "Nature",
+  "filterArchitecture": "Architecture",
+  "filterPortraits":    "Portraits",
+  "filterAbstract":     "Abstract",
+  "lbClose": "Close",
+  "lbPrev":  "Previous image",
+  "lbNext":  "Next image",
+  "footerText": "Gallery — Built with HTML / CSS / JS",
+  "langToggleLabel": "Switch to Italian",
+  "items": [
+    { "title": "Silent Forest" },
+    { "title": "Sea at Dawn" },
+    { "title": "Winter Mountains" },
+    { "title": "Wildflowers" },
+    { "title": "Red Sunset" },
+    { "title": "Cathedral of Light" },
+    { "title": "Urban Geometries" },
+    { "title": "Ancient Gate" },
+    { "title": "Medieval Courtyard" },
+    { "title": "Face in Shadow" },
+    { "title": "Direct Gaze" },
+    { "title": "Pure Emotion" },
+    { "title": "Deep Thought" },
+    { "title": "Waves of Colour" },
+    { "title": "Infinite Lines" },
+    { "title": "Abstract Reflections" }
+  ]
+}

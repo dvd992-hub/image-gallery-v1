@@ -1,0 +1,526 @@
+/* ==========================================================================
+   css/style.css — Visual Gallery
+   --------------------------------------------------------------------------
+   TABLE OF CONTENTS
+   1.  CSS Variables (Design Tokens)
+   2.  Reset & Base
+   3.  Header
+   4.  Language Toggle
+   5.  Filter Bar
+   6.  Gallery Grid (CSS Masonry)
+   7.  Gallery Card
+   8.  Card Overlay
+   9.  Card Tag (hover badge)
+   10. Lightbox
+   11. Footer
+   12. Responsive Breakpoints
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. CSS VARIABLES — Design Tokens
+   --------------------------------------------------------------------------
+   All colours, fonts, and transition speeds live here.
+   Edit this section only to fully reskin the gallery.
+   ========================================================================== */
+:root {
+  /* ── Backgrounds ──────────────────────────────────────── */
+  --bg:      #0d0d0d;   /* page background                  */
+  --surface: #161616;   /* subtle surface (unused, reserved) */
+  --card:    #1c1c1c;   /* card background                  */
+
+  /* ── Accent ───────────────────────────────────────────── */
+  --gold:     #c9a84c;              /* primary accent — warm gold     */
+  --gold-dim: rgba(201,168,76,0.15);/* translucent gold for hover fills */
+
+  /* ── Typography ───────────────────────────────────────── */
+  --text:       #f0ede6; /* primary text                     */
+  --text-muted: #888880; /* labels, captions, secondary text */
+
+  /* ── Borders ──────────────────────────────────────────── */
+  --border: rgba(255,255,255,0.07); /* subtle separator line */
+
+  /* ── Font stacks ──────────────────────────────────────── */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-ui:      'Inter', system-ui, sans-serif;
+
+  /* ── Transition speeds ────────────────────────────────── */
+  --t-fast:   0.2s ease;
+  --t-normal: 0.3s ease;
+  --t-slow:   0.5s ease;
+}
+
+
+/* ==========================================================================
+   2. RESET & BASE
+   ========================================================================== */
+
+/* Box-sizing reset: padding and border are included in element width/height */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin:     0;
+  padding:    0;
+}
+
+body {
+  background:  var(--bg);
+  color:       var(--text);
+  font-family: var(--font-ui);
+  min-height:  100vh;
+  overflow-x:  hidden; /* prevent horizontal scroll */
+}
+
+ul, ol  { list-style: none; }
+
+/* Strip default button styles; keep cursor: pointer */
+button {
+  background:  none;
+  border:      none;
+  cursor:      pointer;
+  font-family: inherit;
+}
+
+
+/* ==========================================================================
+   3. HEADER
+   ========================================================================== */
+
+.site-header {
+  padding:       3rem 2rem 2rem;
+  text-align:    center;
+  border-bottom: 1px solid var(--border);
+  position:      relative; /* positioning context for ::after gold bar */
+}
+
+/* Decorative 2 px gold bar centred below the title */
+.site-header::after {
+  content:    '';
+  display:    block;
+  width:      48px;
+  height:     2px;
+  background: var(--gold);
+  margin:     1.5rem auto 0;
+}
+
+/* Small uppercase eyebrow label above the title */
+.site-label {
+  font-size:      11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color:          var(--gold);
+  font-weight:    500;
+  margin-bottom:  0.75rem;
+}
+
+/* Main page title — fluid size between 2 rem and 3.5 rem */
+.site-title {
+  font-family:    var(--font-display);
+  font-size:      clamp(2rem, 5vw, 3.5rem);
+  font-weight:    400;
+  letter-spacing: -0.01em;
+  line-height:    1.1;
+}
+
+/* Italic, gold-coloured word inside the title */
+.site-title em {
+  font-style: italic;
+  color:      var(--gold);
+}
+
+
+/* ==========================================================================
+   4. LANGUAGE TOGGLE
+   --------------------------------------------------------------------------
+   A compact button in the top-right corner of the header.
+   Toggles between EN and IT; JS updates its label text.
+   ========================================================================== */
+
+.lang-toggle {
+  position:    absolute;
+  top:         1.25rem;
+  right:       1.5rem;
+  background:  transparent;
+  border:      1px solid var(--border);
+  color:       var(--text-muted);
+  padding:     0.3rem 0.75rem;
+  border-radius: 100px;      /* pill shape */
+  font-size:   11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:  color var(--t-fast), border-color var(--t-fast);
+}
+
+.lang-toggle:hover {
+  color:        var(--gold);
+  border-color: var(--gold);
+}
+
+
+/* ==========================================================================
+   5. FILTER BAR
+   ========================================================================== */
+
+.filters {
+  display:         flex;
+  gap:             0.5rem;
+  justify-content: center;
+  flex-wrap:       wrap;      /* wraps on narrow screens */
+  padding:         1.75rem 2rem;
+  border-bottom:   1px solid var(--border);
+}
+
+.filter-btn {
+  background:     transparent;
+  border:         1px solid var(--border);
+  color:          var(--text-muted);
+  padding:        0.4rem 1rem;
+  border-radius:  100px;
+  font-size:      12px;
+  letter-spacing: 0.05em;
+  transition:     color var(--t-fast), border-color var(--t-fast), background var(--t-fast);
+}
+
+.filter-btn:hover {
+  border-color: var(--gold);
+  color:        var(--gold);
+}
+
+/* Active / selected state — filled gold pill */
+.filter-btn.active {
+  background:   var(--gold);
+  border-color: var(--gold);
+  color:        #0d0d0d;   /* dark text on gold background */
+  font-weight:  500;
+}
+
+
+/* ==========================================================================
+   6. GALLERY GRID — CSS MASONRY
+   --------------------------------------------------------------------------
+   We use the CSS `columns` shorthand instead of Grid/Flexbox.
+   `columns: 4 240px` means: try to create 4 columns, but never make each
+   column narrower than 240 px. On small screens the browser automatically
+   reduces the column count. No JavaScript layout calculation is needed.
+   ========================================================================== */
+
+.gallery-wrap {
+  padding:   2rem;
+  max-width: 1400px;
+  margin:    0 auto;
+}
+
+.gallery {
+  columns:    4 240px; /* max 4 columns, min 240 px per column */
+  column-gap: 1rem;
+}
+
+
+/* ==========================================================================
+   7. GALLERY CARD
+   ========================================================================== */
+
+.card {
+  break-inside:  avoid;  /* prevent a card from splitting across two columns */
+  margin-bottom: 1rem;
+
+  position:      relative;
+  cursor:        pointer;
+  border-radius: 4px;
+  overflow:      hidden;
+  background:    var(--card);
+  border:        1px solid var(--border);
+
+  /* Used when cards are revealed after a filter switch */
+  opacity:    1;
+  transform:  translateY(0);
+  transition: opacity var(--t-normal), transform var(--t-normal);
+}
+
+/* Cards that don't match the active filter are hidden by JS */
+.card.hidden {
+  display: none;
+}
+
+/* The photo fills the full card width */
+.card img {
+  width:      100%;
+  display:    block;
+  transition: transform var(--t-slow);
+  filter:     brightness(0.9); /* slightly dim at rest for contrast */
+}
+
+/* Scale up and restore brightness on hover */
+.card:hover img {
+  transform: scale(1.04);
+  filter:    brightness(1);
+}
+
+
+/* ==========================================================================
+   8. CARD OVERLAY
+   --------------------------------------------------------------------------
+   Sits on top of the image. Contains the category label + image title.
+   Hidden at rest; fades + slides up from the bottom on hover.
+   ========================================================================== */
+
+.card-overlay {
+  position:        absolute;
+  inset:           0; /* covers the entire card */
+
+  /* Gradient: opaque black at bottom → transparent at top */
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.85) 0%,
+    rgba(0,0,0,0.20) 50%,
+    transparent      100%
+  );
+
+  display:        flex;
+  flex-direction: column;
+  justify-content: flex-end; /* content anchored to the bottom edge */
+  padding:        1.25rem;
+
+  /* Hidden state */
+  opacity:    0;
+  transform:  translateY(6px);
+  transition: opacity var(--t-normal), transform var(--t-normal);
+}
+
+/* Reveal overlay on card hover */
+.card:hover .card-overlay {
+  opacity:   1;
+  transform: translateY(0);
+}
+
+/* Category label above the title */
+.card-cat {
+  font-size:      10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color:          var(--gold);
+  font-weight:    500;
+  margin-bottom:  0.2rem;
+}
+
+/* Image title */
+.card-title {
+  font-family: var(--font-display);
+  font-size:   1rem;
+  font-weight: 400;
+  color:       #fff;
+
+  /* Animated underline that expands from left to right on hover */
+  position: relative;
+  display:  inline-block;
+}
+
+.card-title::after {
+  content:    '';
+  position:   absolute;
+  bottom:     -2px;
+  left:       0;
+  width:      0;            /* starts collapsed */
+  height:     1px;
+  background: var(--gold);
+  transition: width var(--t-normal) 0.1s; /* slight delay for elegance */
+}
+
+/* Expand underline to full width when parent card is hovered */
+.card:hover .card-title::after {
+  width: 100%;
+}
+
+
+/* ==========================================================================
+   9. CARD TAG (top-right badge)
+   --------------------------------------------------------------------------
+   Small pill showing the category. Invisible at rest; fades in on hover.
+   ========================================================================== */
+
+.card-tag {
+  position:        absolute;
+  top:             0.75rem;
+  right:           0.75rem;
+  background:      rgba(0,0,0,0.6);
+  border:          1px solid var(--border);
+  border-radius:   100px;
+  padding:         2px 8px;
+  font-size:       10px;
+  letter-spacing:  0.1em;
+  text-transform:  uppercase;
+  color:           var(--text-muted);
+  backdrop-filter: blur(4px);
+
+  opacity:    0;
+  transition: opacity var(--t-normal);
+}
+
+.card:hover .card-tag {
+  opacity: 1;
+}
+
+
+/* ==========================================================================
+   10. LIGHTBOX
+   --------------------------------------------------------------------------
+   Full-screen overlay. Hidden (display:none) by default.
+   JS adds .open to switch it to display:flex.
+   ========================================================================== */
+
+.lightbox {
+  display:         none; /* toggled to flex by JS (.open class) */
+  position:        fixed;
+  inset:           0;
+  z-index:         1000;
+  background:      rgba(0,0,0,0.92);
+  align-items:     center;
+  justify-content: center;
+  padding:         2rem;
+  backdrop-filter: blur(12px);
+}
+
+.lightbox.open {
+  display: flex;
+}
+
+/* Inner content wrapper — constrained to a readable max-width */
+.lb-inner {
+  position:  relative;
+  max-width: 900px;
+  width:     100%;
+  animation: lbIn 0.3s ease; /* plays on every open */
+}
+
+/* Entry animation: scale + fade */
+@keyframes lbIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+
+/* The enlarged photo */
+.lb-img {
+  width:         100%;
+  display:       block;
+  border-radius: 4px;
+  max-height:    80vh;
+  object-fit:    contain; /* never crop — letterbox instead */
+  border:        1px solid var(--border);
+}
+
+/* Caption row below the image */
+.lb-meta {
+  padding:         1rem 0 0;
+  display:         flex;
+  align-items:     baseline;
+  justify-content: space-between;
+  gap:             1rem;
+}
+
+.lb-title {
+  font-family: var(--font-display);
+  font-size:   1.25rem;
+  font-weight: 400;
+  color:       var(--text);
+}
+
+.lb-cat {
+  font-size:      11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color:          var(--gold);
+  white-space:    nowrap;
+}
+
+/* Close (✕) button — top-right of the inner box */
+.lb-close {
+  position:    absolute;
+  top:         -2.5rem;
+  right:       0;
+  color:       var(--text-muted);
+  font-size:   1.5rem;
+  line-height: 1;
+  padding:     0.25rem;
+  transition:  color var(--t-fast);
+}
+
+.lb-close:hover { color: var(--text); }
+
+/* Prev / Next arrow buttons — float to the sides of lb-inner */
+.lb-nav {
+  position:        absolute;
+  top:             50%;
+  transform:       translateY(-50%);
+  background:      rgba(255,255,255,0.06);
+  border:          1px solid var(--border);
+  color:           var(--text);
+  width:           44px;
+  height:          44px;
+  border-radius:   50%;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       1.25rem;
+  transition:      background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+}
+
+.lb-nav:hover {
+  background:   var(--gold-dim);
+  border-color: var(--gold);
+  color:        var(--gold);
+}
+
+.lb-prev { right: calc(100% + 1rem); } /* left side  */
+.lb-next { left:  calc(100% + 1rem); } /* right side */
+
+
+/* ==========================================================================
+   11. FOOTER
+   ========================================================================== */
+
+.site-footer {
+  text-align:     center;
+  padding:        3rem 2rem;
+  color:          var(--text-muted);
+  font-size:      12px;
+  letter-spacing: 0.05em;
+  border-top:     1px solid var(--border);
+  margin-top:     2rem;
+}
+
+.site-footer span { color: var(--gold); }
+
+
+/* ==========================================================================
+   12. RESPONSIVE BREAKPOINTS
+   --------------------------------------------------------------------------
+   The masonry grid is already fluid via CSS columns.
+   Here we handle edge cases for narrow screens and the lightbox.
+   ========================================================================== */
+
+/* Tablet and below (≤ 700 px): hide side arrows, tighten spacing */
+@media (max-width: 700px) {
+  .lb-prev,
+  .lb-next    { display: none; }
+
+  .lb-inner   { max-width: 100%; }
+
+  .gallery-wrap { padding: 1rem; }
+  .gallery      { column-gap: 0.75rem; }
+  .card         { margin-bottom: 0.75rem; }
+}
+
+/* Very small phones (≤ 400 px): tighten header and filter bar */
+@media (max-width: 400px) {
+  .site-header { padding: 2rem 1rem 1.5rem; }
+  .filters     { padding: 1rem; gap: 0.4rem; }
+  .filter-btn  { padding: 0.35rem 0.75rem; }
+
+  /* Push lang toggle down to avoid overlap with narrow title */
+  .lang-toggle {
+    top:   0.75rem;
+    right: 0.75rem;
+  }
+}

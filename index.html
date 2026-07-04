@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visual Gallery</title>
+
+  <!-- ── Favicons ─────────────────────────────────────────────────────────
+       SVG: modern browsers (scales to any size, respects prefers-color-scheme)
+       ICO: legacy browsers + browser tab fallback (16×16, 32×32, 48×48 inside)
+  ──────────────────────────────────────────────────────────────────────── -->
+  <link rel="icon" type="image/svg+xml"  href="assets/favicon/favicon.svg" />
+  <link rel="icon" type="image/x-icon"   href="assets/favicon/favicon.ico" />
+
+  <!-- ── Google Fonts ──────────────────────────────────────────────────────
+       Playfair Display — display / editorial titles
+       Inter           — UI labels, body text, buttons
+  ──────────────────────────────────────────────────────────────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- =====================================================================
+       HEADER
+       Contains: eyebrow label, main title, language toggle button.
+       The gold divider line is rendered via CSS (.site-header::after).
+
+       data-i18n attributes: script.js reads these to apply translated text.
+  ====================================================================== -->
+  <header class="site-header">
+
+    <!-- Language toggle — top-right corner of the header.
+         JS populates its label text (e.g. "Switch to Italian").
+         The current language is detected from localStorage or navigator.language. -->
+    <button
+      class="lang-toggle"
+      id="lang-toggle"
+      aria-label="Switch language"
+    ></button>
+
+    <p class="site-label" data-i18n="site-label">Portfolio</p>
+
+    <h1 class="site-title">
+      <!-- The two words are split so each can be translated independently -->
+      <span data-i18n="site-title">Visual</span>
+      <em   data-i18n="site-title-em">Gallery</em>
+    </h1>
+
+  </header>
+
+
+  <!-- =====================================================================
+       FILTER BAR
+       Each button's data-filter value must match a "cat" key used in js/data.js.
+       The .active class is managed by script.js on click.
+       Button labels use data-i18n so they update when the language changes.
+  ====================================================================== -->
+  <nav class="filters" aria-label="Filter by category">
+    <button class="filter-btn active" data-filter="all"          data-i18n="filter-all">All</button>
+    <button class="filter-btn"        data-filter="nature"       data-i18n="filter-nature">Nature</button>
+    <button class="filter-btn"        data-filter="architecture" data-i18n="filter-architecture">Architecture</button>
+    <button class="filter-btn"        data-filter="portraits"    data-i18n="filter-portraits">Portraits</button>
+    <button class="filter-btn"        data-filter="abstract"     data-i18n="filter-abstract">Abstract</button>
+  </nav>
+
+
+  <!-- =====================================================================
+       GALLERY GRID
+       Cards are injected here dynamically by script.js (buildCards function).
+       The wrapper uses CSS `columns` for a native masonry layout.
+  ====================================================================== -->
+  <main class="gallery-wrap">
+    <div
+      class="gallery"
+      id="gallery"
+      role="list"
+      aria-label="Image gallery"
+    ></div>
+  </main>
+
+
+  <!-- =====================================================================
+       LIGHTBOX OVERLAY
+       Hidden by default (display:none in CSS).
+       script.js adds/removes .open to show or hide it.
+
+       Controls:
+         #lb-close — ✕ button (top-right of the inner panel)
+         #lb-prev  — ← previous image arrow
+         #lb-next  — → next  image arrow
+         #lb-img   — the enlarged <img>
+         #lb-title — image title caption
+         #lb-cat   — category label caption
+
+       Keyboard shortcuts (handled in script.js):
+         Escape     → close
+         ArrowLeft  → previous
+         ArrowRight → next
+
+       Click on the dark backdrop (outside .lb-inner) also closes it.
+  ====================================================================== -->
+  <div
+    class="lightbox"
+    id="lightbox"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Enlarged image viewer"
+  >
+    <div class="lb-inner">
+
+      <!-- Close button -->
+      <button
+        class="lb-close"
+        id="lb-close"
+        aria-label="Close lightbox"
+      >
+        <span data-i18n="lb-close-label">Close</span> &#x2715;
+      </button>
+
+      <!-- Previous image arrow -->
+      <button
+        class="lb-nav lb-prev"
+        id="lb-prev"
+        aria-label="Previous image"
+      >&#x2190;</button>
+
+      <!-- The enlarged image (src and alt set dynamically by script.js) -->
+      <img class="lb-img" id="lb-img" src="" alt="" />
+
+      <!-- Caption: title (left) + category (right) -->
+      <div class="lb-meta">
+        <p class="lb-title" id="lb-title"></p>
+        <p class="lb-cat"   id="lb-cat"></p>
+      </div>
+
+      <!-- Next image arrow -->
+      <button
+        class="lb-nav lb-next"
+        id="lb-next"
+        aria-label="Next image"
+      >&#x2192;</button>
+
+    </div>
+  </div>
+
+
+  <!-- =====================================================================
+       FOOTER
+  ====================================================================== -->
+  <footer class="site-footer">
+    &copy; 2026 &mdash; <span data-i18n="footer-text">Gallery — Built with HTML / CSS / JS</span>
+  </footer>
+
+
+  <!-- ── Scripts ──────────────────────────────────────────────────────────
+       Loaded at the end of <body> so the DOM is fully parsed before JS runs.
+       Load order matters: data.js must come before script.js because
+       script.js references the GALLERY_ITEMS global defined in data.js.
+  ──────────────────────────────────────────────────────────────────────── -->
+  <script src="js/data.js"></script>
+  <script src="js/script.js"></script>
+
+</body>
+</html>
